@@ -51,7 +51,7 @@ exports.sourceNodes = async ({
       const loginResponse = await axios(auth0Config);
 
       if (loginResponse.hasOwnProperty('data')) {
-        authorization = 'Bearer ' + loginResponse.data.id_token;
+        authorization = 'Bearer ' + loginResponse.data.access_token;
       }
     } catch (error) {
       console.error('\nEncountered authentication error: ' + error);
