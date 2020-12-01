@@ -107,22 +107,25 @@ plugins: [
       // specified amount of time
       maxCacheDurationSeconds: 60 * 60 * 24,
 
-      // Advanced authentication for Auth0
-      // Only available from version 2.1.0
-      auth0Config: {
-        method: "POST",
-        url: "https://MyAuth0Domain/oauth/token",
-        headers: { "content-type": "application/json" },
-        data: {
-          grant_type: "password",
-          username: "myusername",
-          password: "PassAWordHere",
-          audience: "Auth0APIAudience",
-          scope: "openid",
-          client_id: "AUTH0_CLIENT_ID",
-          client_secret: "AUTH0_SECRET"
+      oauth2Config: {
+        requestConfig: {
+          method: "POST",
+          url: "https://your-oauth-provider.com/oauth/token",
+          headers: { "content-type": "application/json" },
+          data: {
+            // This is an example of the grant_type `client_credentials`.
+            // Of course, you can change the grant type and add/remove the parameters as necessary
+            // I would suggest using client_credentials for the build phase in a CI
+            grant_type: "client_credentials",
+            scope: "venues_read",
+            client_id: "OAUTH_CLIENT_ID",
+            client_secret: "OAUTH_CLIENT_SECRET"
+          },
+          json: true
         },
-        json: true
+        accessTokenReducer: (response) => {
+          return response.access_token;
+        }
       },
 
       // Optional payload key name if your api returns your payload in a different key
@@ -161,7 +164,7 @@ plugins: [
       // Default is `id`
       refreshId: `id`,
 
-      // Pass an array containing any number of the entity configuration properties (except verbose, auth0Config),
+      // Pass an array containing any number of the entity configuration properties (except verbose, oauth2Config),
       // any not specified are defaulted to the general properties that are specified
       // Only available from version 2.1.0
       entitiesArray: [

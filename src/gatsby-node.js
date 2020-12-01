@@ -23,7 +23,7 @@ exports.sourceNodes = async ({
   skipCreateNode = false,
   path,
   auth = false,
-  auth0Config = false,
+  oauth2Config = false,
   payloadKey,
   name,
   entityLevel,
@@ -44,14 +44,13 @@ exports.sourceNodes = async ({
   let verbose = verboseOutput
 
   let authorization
-  if(auth0Config) {
+  if(oauth2Config && oauth2Config.hasOwnProperty('requestConfig') && oauth2Config.hasOwnProperty('accessTokenReducer')) {
     console.time('\nAuthenticate user');
-    // Make API request.
     try {
-      const loginResponse = await axios(auth0Config);
-
-      if (loginResponse.hasOwnProperty('data')) {
-        authorization = 'Bearer ' + loginResponse.data.access_token;
+      const response = await axios(oauth2Config.requestConfig);
+      const accessToken = oauth2Config.accessTokenReducer(response);
+      if (accessToken) {
+        authorization = `Bearer ${accessToken}`;
       }
     } catch (error) {
       console.error('\nEncountered authentication error: ' + error);
